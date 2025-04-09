@@ -1,17 +1,12 @@
 package logging
 
 import (
-	"context"
 	"io"
 	"log/slog"
 	"os"
 )
 
-// contextKey is a type for context keys to avoid collisions
-type contextKey string
-
-// loggerKey is the key used to store and retrieve the logger from context
-const loggerKey contextKey = "logger"
+// This file contains the core logger functionality
 
 // Default logger instance with JSON handler
 var defaultOutput io.Writer = os.Stdout
@@ -56,32 +51,7 @@ func GetLogger() *slog.Logger {
 	return defaultLogger
 }
 
-// WithContext returns a logger from the context if present,
-// otherwise returns the default logger
-func WithContext(ctx context.Context) *slog.Logger {
-	if ctx == nil {
-		return defaultLogger
-	}
-	
-	if logger, ok := ctx.Value(loggerKey).(*slog.Logger); ok && logger != nil {
-		return logger
-	}
-	
-	return defaultLogger
-}
-
-// ToContext adds the logger to the provided context
-func ToContext(ctx context.Context, logger *slog.Logger) context.Context {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	
-	if logger == nil {
-		logger = defaultLogger
-	}
-	
-	return context.WithValue(ctx, loggerKey, logger)
-}
+// Context-related functions have been moved to context.go
 
 // WithGroup returns a new logger with the specified group name
 func WithGroup(name string) *slog.Logger {
