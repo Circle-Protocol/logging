@@ -1,0 +1,42 @@
+name: Release
+on:
+  push:
+    branches:
+      - production
+    tags-ignore:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        go: ['1.23','1.24']
+    name: Go ${{ matrix.go }} test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+      - run: go test -race ./...
+  release:
+    runs-on: ubuntu-24.04
+    needs: [test]
+    if: ${{ github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/production' }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Source checkout
+      uses: actions/checkout@v4
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v4
+      with:
+        dry_run: false
+        semantic_version: 23.0.4
+        extra_plugins: |
+          @semantic-release/exec@6.0.3
