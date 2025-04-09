@@ -14,13 +14,13 @@ import (
 type Config struct {
 	// Level sets the minimum log level (debug, info, warn, error)
 	Level string `json:"level" yaml:"level"`
-	
+
 	// Formatter configures the log output format and options
 	Formatter Formatter `json:"formatter" yaml:"formatter"`
-	
+
 	// AddSource adds source code information to log entries
 	AddSource bool `json:"addSource" yaml:"addSource"`
-	
+
 	// Output specifies where logs should be written (default: stderr)
 	Output string `json:"output" yaml:"output"`
 }
@@ -29,7 +29,7 @@ type Config struct {
 type Formatter struct {
 	// Format specifies the output format (json or text)
 	Format string `json:"format" yaml:"format"`
-	
+
 	// Data contains additional formatter-specific options
 	Data map[string]interface{} `json:"data" yaml:"data"`
 }
@@ -107,12 +107,12 @@ func NewConfig(opts ...ConfigOption) *Config {
 		AddSource: false,
 		Output:    OutputStderr,
 	}
-	
+
 	// Apply options
 	for _, opt := range opts {
 		opt(config)
 	}
-	
+
 	return config
 }
 
@@ -120,11 +120,11 @@ func NewConfig(opts ...ConfigOption) *Config {
 func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	type configAlias Config
 	alias := configAlias(*NewConfig())
-	
+
 	if err := unmarshal(&alias); err != nil {
 		return err
 	}
-	
+
 	*c = Config(alias)
 	return nil
 }
@@ -133,11 +133,11 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 func (c *Config) UnmarshalJSON(data []byte) error {
 	type configAlias Config
 	alias := configAlias(*NewConfig())
-	
+
 	if err := json.Unmarshal(data, &alias); err != nil {
 		return err
 	}
-	
+
 	*c = Config(alias)
 	return nil
 }
@@ -148,7 +148,7 @@ func (c *Config) Apply() error {
 	if err != nil {
 		return err
 	}
-	
+
 	// Update the global logger
 	slog.SetDefault(logger)
 	return nil
@@ -161,24 +161,24 @@ func (c *Config) CreateLogger() (*slog.Logger, error) {
 	if err := level.UnmarshalText([]byte(strings.ToUpper(c.Level))); err != nil {
 		return nil, fmt.Errorf("invalid log level %q: %w", c.Level, err)
 	}
-	
+
 	// Configure handler options
 	opts := &slog.HandlerOptions{
 		AddSource: c.AddSource,
 		Level:     level,
 	}
-	
+
 	// Add field mapping if specified
 	if fieldMap := c.fieldMapToReplaceAttr(); fieldMap != nil {
 		opts.ReplaceAttr = fieldMap
 	}
-	
+
 	// Get output writer
 	writer, err := c.getOutputWriter()
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Create handler based on format
 	var handler slog.Handler
 	switch c.Formatter.Format {
@@ -189,7 +189,7 @@ func (c *Config) CreateLogger() (*slog.Logger, error) {
 	default:
 		return nil, fmt.Errorf("unsupported formatter format: %s", c.Formatter.Format)
 	}
-	
+
 	// Create and return logger
 	return slog.New(handler), nil
 }
@@ -214,7 +214,7 @@ func (c *Config) getOutputWriter() (io.Writer, error) {
 				}
 				cleanPath = filepath.Join(cwd, cleanPath)
 			}
-			
+
 			// Use more restrictive file permissions (0600 instead of 0666)
 			file, err := os.OpenFile(cleanPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 			if err != nil {
@@ -235,7 +235,7 @@ func (c *Config) getOutputWriter() (io.Writer, error) {
 			}
 			cleanPath = filepath.Join(cwd, cleanPath)
 		}
-		
+
 		// Use more restrictive file permissions (0600 instead of 0666)
 		file, err := os.OpenFile(cleanPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 		if err != nil {
@@ -251,7 +251,7 @@ func (c *Config) fieldMapToReplaceAttr() func(groups []string, a slog.Attr) slog
 	if !ok {
 		return nil
 	}
-	
+
 	return func(groups []string, a slog.Attr) slog.Attr {
 		// If we have a mapping for this key, replace it
 		if newKey, ok := fieldMap[a.Key]; ok {

@@ -33,7 +33,7 @@ func TestToContext(t *testing.T) {
 	logger := slog.Default()
 	ctx := ToContext(nil, logger)
 	assert.NotNil(t, ctx)
-	
+
 	got, ok := FromContext(ctx)
 	assert.True(t, ok)
 	assert.Equal(t, logger, got)
@@ -41,7 +41,7 @@ func TestToContext(t *testing.T) {
 	// Test with nil logger
 	ctx = ToContext(context.Background(), nil)
 	assert.NotNil(t, ctx)
-	
+
 	got, ok = FromContext(ctx)
 	assert.True(t, ok)
 	assert.Equal(t, GetLogger(), got)

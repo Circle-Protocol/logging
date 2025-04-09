@@ -97,7 +97,7 @@ func TestMiddleware(t *testing.T) {
 			statusCode: http.StatusOK,
 		},
 		{
-			name: "request with group",
+			name:      "request with group",
 			groupName: "http",
 			want: `{
 				"time": "2025-04-09T12:00:00Z",
@@ -257,10 +257,10 @@ func TestMiddlewareWithRequestContext(t *testing.T) {
 		// Get logger from context
 		ctxLogger, ok := FromContext(r.Context())
 		require.True(t, ok, "Logger should be in context")
-		
+
 		// Log something with the context logger
 		ctxLogger.Info("handler log")
-		
+
 		fmt.Fprint(w, "Hello, World!")
 	})
 

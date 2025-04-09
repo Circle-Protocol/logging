@@ -2,8 +2,8 @@ package logging
 
 import (
 	"fmt"
-	"net/http"
 	"log/slog"
+	"net/http"
 )
 
 // StringerValuer returns a Valuer that forces the logger to use the type's String
@@ -30,15 +30,15 @@ func RequestToAttr(req *http.Request) slog.Attr {
 	if req == nil {
 		return slog.Group("request")
 	}
-	
+
 	attrs := []any{
 		slog.String("method", req.Method),
 	}
-	
+
 	if req.URL != nil {
 		attrs = append(attrs, slog.Any("url", StringerValuer(req.URL)))
 	}
-	
+
 	return slog.Group("request", attrs...)
 }
 
@@ -48,7 +48,7 @@ func ResponseToAttr(resp *http.Response) slog.Attr {
 	if resp == nil {
 		return slog.Group("response")
 	}
-	
+
 	return slog.Group("response",
 		slog.String("status", resp.Status),
 		slog.Int64("content_length", resp.ContentLength),

@@ -89,17 +89,17 @@ func TestEnableHTTPClient(t *testing.T) {
 			}`,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create a test logger that writes to a string builder
 			out, logger := newTestLogger()
-			
+
 			// Create a client with the specified transport
 			c := &http.Client{
 				Transport: tt.transport,
 			}
-			
+
 			// Enable logging for the client
 			err := EnableHTTPClient(c,
 				WithFallbackLogger(logger),
@@ -125,10 +125,10 @@ func TestEnableHTTPClient(t *testing.T) {
 			if tt.fromCtx {
 				req = req.WithContext(ToContext(req.Context(), logger.WithGroup("ctx")))
 			}
-			
+
 			// Execute the request
 			_, err = c.Do(req)
-			
+
 			// Check for expected error
 			if tt.wantErr != nil {
 				require.ErrorIs(t, err, tt.wantErr)
@@ -138,7 +138,7 @@ func TestEnableHTTPClient(t *testing.T) {
 
 			// Format the expected log with the actual server URL
 			wantLog := fmt.Sprintf(tt.wantLog, ts.URL)
-			
+
 			// Compare the actual log with the expected log
 			assert.JSONEq(t, wantLog, out.String())
 		})

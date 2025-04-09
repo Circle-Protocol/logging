@@ -21,12 +21,12 @@ var defaultLogger = slog.New(slog.NewJSONHandler(defaultOutput, &slog.HandlerOpt
 func SetOutput(out io.Writer) {
 	// Update the default output
 	defaultOutput = out
-	
+
 	// Create a new handler with the current level but new output
 	handler := slog.NewJSONHandler(out, &slog.HandlerOptions{
 		Level: defaultLevel,
 	})
-	
+
 	// Replace the default logger
 	defaultLogger = slog.New(handler)
 }
@@ -36,12 +36,12 @@ func SetOutput(out io.Writer) {
 func SetLevel(level slog.Level) {
 	// Update the default level
 	defaultLevel = level
-	
+
 	// Create a new handler with the current output but new level
 	handler := slog.NewJSONHandler(defaultOutput, &slog.HandlerOptions{
 		Level: level,
 	})
-	
+
 	// Replace the default logger
 	defaultLogger = slog.New(handler)
 }

@@ -102,7 +102,7 @@ func (m *middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Get request attributes
 	requestAttr := m.reqAttr(r)
-	
+
 	// Create a logger with attributes
 	if m.group != "" {
 		// For grouped logging, we'll collect all attributes at the end
@@ -110,7 +110,7 @@ func (m *middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// For non-grouped logging, add request attributes directly
 		logger = logger.With(requestAttr)
-		
+
 		// Add ID if configured
 		if m.nextID != nil {
 			logger = logger.With(m.nextID())
@@ -129,23 +129,23 @@ func (m *middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Prepare response attributes
 	durationAttr := slog.Duration("duration", m.duration(start))
 	responseAttr := lw.Attr()
-	
+
 	// Add response details to logger
 	if m.group != "" {
 		// For grouped logging, add all attributes under the group name
 		groupAttrs := []any{}
-		
+
 		// Add ID if configured
 		if m.nextID != nil {
 			groupAttrs = append(groupAttrs, m.nextID())
 		}
-		
+
 		// Add request attributes
 		groupAttrs = append(groupAttrs, requestAttr)
-		
+
 		// Add duration and response
 		groupAttrs = append(groupAttrs, durationAttr, responseAttr)
-		
+
 		// Create a new logger with the group
 		logger = logger.With(slog.Group(m.group, groupAttrs...))
 	} else {
@@ -192,7 +192,7 @@ func (w *loggedWriter) Write(b []byte) (int, error) {
 	if w.statusCode == 0 {
 		w.WriteHeader(http.StatusOK)
 	}
-	
+
 	n, err := w.ResponseWriter.Write(b)
 	w.written += n
 	w.err = err

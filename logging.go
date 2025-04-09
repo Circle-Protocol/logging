@@ -488,13 +488,13 @@ func (e *Entry) log(logFunc func()) {
 		// If there's an error, add it to the logger
 		e.logger = e.logger.With("error", e.err)
 	}
-	
+
 	// Add caller information
 	_, file, line, ok := runtime.Caller(2)
 	if ok {
 		e.logger = e.logger.With("caller", fmt.Sprintf("%s:%d", file, line))
 	}
-	
+
 	// Execute the log function
 	logFunc()
 }

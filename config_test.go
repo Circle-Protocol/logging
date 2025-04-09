@@ -61,7 +61,7 @@ func TestNewConfig(t *testing.T) {
 			assert.Equal(t, tt.expected.Formatter.Format, config.Formatter.Format)
 			assert.Equal(t, tt.expected.AddSource, config.AddSource)
 			assert.Equal(t, tt.expected.Output, config.Output)
-			
+
 			// Check formatter data
 			for k, v := range tt.expected.Formatter.Data {
 				assert.Equal(t, v, config.Formatter.Data[k])
@@ -143,12 +143,12 @@ func TestUnmarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			config := &Config{}
 			err := json.Unmarshal([]byte(tt.jsonData), config)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				return
 			}
-			
+
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected.Level, config.Level)
 			assert.Equal(t, tt.expected.Formatter.Format, config.Formatter.Format)
@@ -227,12 +227,12 @@ formatter:
 		t.Run(tt.name, func(t *testing.T) {
 			config := &Config{}
 			err := yaml.Unmarshal([]byte(tt.yamlData), config)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				return
 			}
-			
+
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected.Level, config.Level)
 			assert.Equal(t, tt.expected.Formatter.Format, config.Formatter.Format)
@@ -291,40 +291,40 @@ func TestCreateLogger(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create a buffer to capture log output
 			buf := &bytes.Buffer{}
-			
+
 			// Override the output in the config to use our buffer
 			if !tt.wantErr {
 				tt.config.Output = OutputStderr // Set to stderr for consistency
 			}
-			
+
 			// Create the logger
 			logger, err := tt.config.CreateLogger()
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				return
 			}
-			
+
 			require.NoError(t, err)
 			assert.NotNil(t, logger)
-			
+
 			// If we have a log message to test, create a custom logger with our buffer
 			if tt.logMessage != "" {
 				// Parse the level
 				var level slog.Level
 				err := level.UnmarshalText([]byte(strings.ToUpper(tt.config.Level)))
 				require.NoError(t, err)
-				
+
 				// Create handler options
 				opts := &slog.HandlerOptions{
 					Level: level,
 				}
-				
+
 				// Create a handler that writes to our buffer
 				var handler slog.Handler
 				if tt.config.Formatter.Format == FormatterJSON {
@@ -332,10 +332,10 @@ func TestCreateLogger(t *testing.T) {
 				} else {
 					handler = slog.NewTextHandler(buf, opts)
 				}
-				
+
 				// Create a logger with our buffer
 				testLogger := slog.New(handler)
-				
+
 				// Log the message
 				switch strings.ToUpper(tt.config.Level) {
 				case "DEBUG":
@@ -347,7 +347,7 @@ func TestCreateLogger(t *testing.T) {
 				case "ERROR":
 					testLogger.Error(tt.logMessage)
 				}
-				
+
 				// Check that the output contains expected strings
 				output := buf.String()
 				for _, s := range tt.contains {
@@ -367,11 +367,11 @@ func TestFieldMapToReplaceAttr(t *testing.T) {
 			"msg":   "message",
 		}),
 	)
-	
+
 	// Get the replace function
 	replaceFunc := config.fieldMapToReplaceAttr()
 	require.NotNil(t, replaceFunc)
-	
+
 	// Test attribute replacement
 	testCases := []struct {
 		attr     slog.Attr
@@ -382,7 +382,7 @@ func TestFieldMapToReplaceAttr(t *testing.T) {
 		{slog.String("msg", "test"), "message"},
 		{slog.String("other", "value"), "other"}, // Unchanged
 	}
-	
+
 	for _, tc := range testCases {
 		result := replaceFunc(nil, tc.attr)
 		assert.Equal(t, tc.expected, result.Key)

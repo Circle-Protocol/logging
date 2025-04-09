@@ -18,7 +18,7 @@ func FromContext(ctx context.Context) (logger *slog.Logger, ok bool) {
 	if ctx == nil {
 		return nil, false
 	}
-	
+
 	logger, ok = ctx.Value(loggerKey).(*slog.Logger)
 	return logger, ok
 }
@@ -30,11 +30,11 @@ func ToContext(ctx context.Context, logger *slog.Logger) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	
+
 	if logger == nil {
 		logger = GetLogger()
 	}
-	
+
 	return context.WithValue(ctx, loggerKey, logger)
 }
 
@@ -44,10 +44,10 @@ func WithContext(ctx context.Context) *slog.Logger {
 	if ctx == nil {
 		return GetLogger()
 	}
-	
+
 	if logger, ok := ctx.Value(loggerKey).(*slog.Logger); ok && logger != nil {
 		return logger
 	}
-	
+
 	return GetLogger()
 }
